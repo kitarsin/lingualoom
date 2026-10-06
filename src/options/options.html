@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LinguaLoom Settings</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main>
+      <h1>LinguaLoom Settings</h1>
+      <p>
+        Choose a provider and translation languages. Save before testing the
+        connection.
+      </p>
+      <form id="settings-form">
+        <label for="provider">Provider</label>
+        <select id="provider">
+          <option value="mock">Mock</option>
+          <option value="openrouter">OpenRouter</option>
+        </select>
+
+        <fieldset id="openrouter-fields">
+          <legend>OpenRouter</legend>
+          <label for="api-key">API key</label>
+          <input
+            id="api-key"
+            type="password"
+            autocomplete="new-password"
+            spellcheck="false"
+          />
+          <small
+            >Leave blank to keep the existing key. LinguaLoom never shows a
+            saved key.</small
+          >
+          <p id="key-status">Checking saved key…</p>
+
+          <label for="model">Model identifier</label>
+          <input
+            id="model"
+            type="text"
+            placeholder="provider/model-name"
+            spellcheck="false"
+          />
+          <small>Copy the exact identifier from OpenRouter's model page.</small>
+
+          <label class="check" for="remember-key">
+            <input id="remember-key" type="checkbox" />
+            Remember key locally on this device
+          </label>
+          <small
+            >Otherwise the key is kept only for this browser session. Local
+            storage is not encrypted.</small
+          >
+        </fieldset>
+
+        <label for="source-language">Source language</label>
+        <input id="source-language" type="text" value="Auto" />
+
+        <label for="target-language">Target language</label>
+        <input id="target-language" type="text" value="English" />
+
+        <label for="mode">Translation mode</label>
+        <select id="mode">
+          <option value="literary">Literary</option>
+        </select>
+
+        <div class="actions">
+          <button id="save" type="submit">Save Settings</button>
+          <button id="test" type="button">Test Connection</button>
+          <button id="remove-key" type="button">Remove Key</button>
+        </div>
+      </form>
+      <p id="status" role="status"></p>
+      <p id="error" role="alert" hidden></p>
+      <p class="privacy">
+        When you choose OpenRouter and translate, chapter text goes directly
+        from this extension to OpenRouter. LinguaLoom has no backend server.
+      </p>
+    </main>
+    <script src="options.js"></script>
+  </body>
+</html>

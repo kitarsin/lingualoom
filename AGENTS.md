@@ -2,13 +2,13 @@
 
 ## Project Structure & Module Organization
 
-LinguaLoom is a WebExtensions MVP for Wattpad. `src/popup/` contains the toolbar UI; `src/browser/` isolates browser API calls; `src/sites/` owns site detection and paragraph extraction; `src/translation/` holds the provider contract and mock provider; and `src/content/` manages page state. DOM tests live in `tests/`. `scripts/build.mjs` combines `manifest.common.json` with browser-specific metadata to produce `dist/firefox/` and `dist/chromium/`.
+LinguaLoom is a WebExtension for Wattpad. `src/popup/` and `src/options/` contain extension UI; `src/browser/` isolates browser API calls; `src/sites/` extracts chapter text; `src/content/` manages page state; `src/settings/` owns configuration and credentials; `src/translation/` holds providers and prompts; and `src/background/` handles runtime requests. Tests live in `tests/`. `scripts/build.mjs` produces `dist/firefox/` and `dist/chromium/` from `manifest.common.json`.
 
-Keep Wattpad selectors in its adapter. Add future sites as separate adapters. Keep provider-specific logic behind `TranslationProvider`; the popup and chapter view should not depend on a particular AI service.
+Keep Wattpad selectors in its adapter and add future sites separately. Keep provider networking behind `TranslationProvider`; content scripts must not contain provider API code.
 
 ## Build, Test, and Development Commands
 
-Use Node.js 20 or newer. Run `npm ci` to install locked dependencies. `npm run build` generates both extension targets; `npm run build:firefox` and `npm run build:chromium` generate one. Run `npm run typecheck`, `npm test`, and `npm run lint` before opening a pull request. `npm run format` applies Prettier. Reload the extension and the Wattpad tab after a build; see `README.md` for browser-specific steps.
+Use Node.js 20 or newer. Run `npm ci` for locked dependencies. `npm run build` generates both targets; `npm run build:firefox` and `npm run build:chromium` generate one. Run `npm run lint` and `npm test` before submitting. `npm run format` applies Prettier. Reload the extension and Wattpad tab after a build; see `README.md`.
 
 ## Coding Style & Naming Conventions
 
@@ -16,7 +16,7 @@ Write TypeScript with two-space indentation and Prettier formatting. Use `kebab-
 
 ## Testing Guidelines
 
-Use Node's test runner with `tsx` and `jsdom`. Name files `*.test.ts`. Test adapter URL and DOM selection separately from translation behavior. For view changes, check that mock output appears, unsupported UI is untouched, repeated toggles work, and original markup returns exactly. Run `npm test` and `npm run build` before submitting.
+Use Node's test runner with `tsx` and `jsdom`. Name files `*.test.ts`. Mock `fetch` for provider tests; never make paid API calls in automated tests. Check adapter selection, prompt and response validation, runtime messages, media preservation, and exact original restoration.
 
 ## Commit & Pull Request Guidelines
 
@@ -24,4 +24,4 @@ Recent commits use short, imperative, capitalized subjects, such as `Correct cap
 
 ## Security & Configuration
 
-This milestone has no API integration or credential storage. Never commit API keys, tokens, browser profiles, `.env` files, `node_modules/`, or generated `dist/` output. Keep extension permissions narrow and explain additions in the pull request.
+Never commit API keys, tokens, browser profiles, `.env` files, `node_modules/`, or generated `dist/`. Keep keys in extension storage and out of Wattpad DOM, messages to content scripts, logs, and errors. Provider requests belong in the background context. `storage.local` is not encrypted; users must opt into remembering a key there. Keep permissions narrow and document changes.

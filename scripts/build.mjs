@@ -24,15 +24,22 @@ for (const name of targets) {
     manifest.browser_specific_settings = {
       gecko: {
         id: "lingualoom@extension.local",
-        data_collection_permissions: { required: ["none"] },
+        data_collection_permissions: {
+          required: ["authenticationInfo", "websiteContent"],
+        },
       },
     };
+    manifest.background = { scripts: ["background.js"] };
+  } else {
+    manifest.background = { service_worker: "background.js" };
   }
 
   await build({
     entryPoints: {
       content: resolve(root, "src/content/content-script.ts"),
       popup: resolve(root, "src/popup/popup.ts"),
+      options: resolve(root, "src/options/options.ts"),
+      background: resolve(root, "src/background/background.ts"),
     },
     outdir,
     bundle: true,
@@ -53,6 +60,14 @@ for (const name of targets) {
     copyFile(
       resolve(root, "src/popup/popup.css"),
       resolve(outdir, "popup.css"),
+    ),
+    copyFile(
+      resolve(root, "src/options/options.html"),
+      resolve(outdir, "options.html"),
+    ),
+    copyFile(
+      resolve(root, "src/options/options.css"),
+      resolve(outdir, "options.css"),
     ),
     copyFile(
       resolve(root, "src/content/content.css"),

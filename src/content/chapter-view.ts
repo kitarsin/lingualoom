@@ -12,6 +12,8 @@ export class ChapterView {
   private translatedUrl: string | null = null;
   private revision = 0;
   private translating = false;
+  private lastError: string | undefined;
+  private lastErrorUrl: string | undefined;
 
   constructor(
     private readonly document: Document,
@@ -19,11 +21,20 @@ export class ChapterView {
     private readonly provider: TranslationProvider,
   ) {}
 
-  status(url: URL): { supported: boolean; translated: boolean } {
+  status(url: URL): {
+    supported: boolean;
+    translated: boolean;
+    translating: boolean;
+    error?: string;
+  } {
     this.resetIfPageChanged(url);
     return {
       supported: this.adapter.isSupported(url, this.document),
       translated: this.pairs.length > 0,
+      translating: this.translating,
+      ...(this.lastError && this.lastErrorUrl === url.href
+        ? { error: this.lastError }
+        : {}),
     };
   }
 
@@ -42,6 +53,8 @@ export class ChapterView {
     );
     const revision = this.revision;
     this.translating = true;
+    this.lastError = undefined;
+    this.lastErrorUrl = undefined;
     try {
       const result = await this.provider.translate({ paragraphs: originals });
       if (result.paragraphs.length !== paragraphs.length) {
@@ -74,6 +87,13 @@ export class ChapterView {
         this.pairs.push({ original, translated, previousHiddenAttribute });
       }
       this.translatedUrl = url.href;
+    } catch (error) {
+      this.lastError =
+        error instanceof Error
+          ? error.message
+          : "Translation failed. Try again.";
+      this.lastErrorUrl = url.href;
+      throw error;
     } finally {
       this.translating = false;
     }
@@ -81,6 +101,8 @@ export class ChapterView {
 
   showOriginal(): void {
     this.revision += 1;
+    this.lastError = undefined;
+    this.lastErrorUrl = undefined;
     for (const { original, translated, previousHiddenAttribute } of this
       .pairs) {
       translated.remove();

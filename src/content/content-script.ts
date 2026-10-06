@@ -1,20 +1,20 @@
 import { onMessage } from "../browser/compat";
-import type { Command, CommandResponse } from "../browser/messages";
+import type { TabCommand, TabResponse } from "../browser/messages";
 import { WattpadAdapter } from "../sites/wattpad-adapter";
-import { MockTranslationProvider } from "../translation/mock-translation-provider";
+import { RuntimeTranslationProvider } from "../translation/runtime-translation-provider";
 import { ChapterView } from "./chapter-view";
 
 const view = new ChapterView(
   document,
   new WattpadAdapter(),
-  new MockTranslationProvider(),
+  new RuntimeTranslationProvider(),
 );
 
 onMessage((message, _sender, sendResponse) => {
-  const command = message as Command;
+  const command = message as TabCommand;
   if (!["status", "translate", "show-original"].includes(command?.type)) return;
 
-  void (async (): Promise<CommandResponse> => {
+  void (async (): Promise<TabResponse> => {
     const url = new URL(document.location.href);
     if (command.type === "translate") await view.translate(url);
     if (command.type === "show-original") view.showOriginal();

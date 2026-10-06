@@ -2,12 +2,17 @@
   "manifest_version": 3,
   "name": "LinguaLoom",
   "version": "0.1.0",
-  "description": "A local mock of literary translation on Wattpad chapters.",
+  "description": "Bring your own key for literary translation on Wattpad chapters.",
   "action": {
     "default_title": "LinguaLoom",
     "default_popup": "popup.html"
   },
-  "permissions": ["activeTab"],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": ["https://openrouter.ai/*"],
   "content_scripts": [
     {
       "matches": ["https://wattpad.com/*", "https://www.wattpad.com/*"],

@@ -4,7 +4,10 @@ import { JSDOM } from "jsdom";
 import { ChapterView } from "../src/content/chapter-view";
 import { WattpadAdapter } from "../src/sites/wattpad-adapter";
 import { MockTranslationProvider } from "../src/translation/mock-translation-provider";
-import type { TranslationProvider } from "../src/translation/provider";
+import type {
+  TranslationProvider,
+  TranslationResult,
+} from "../src/translation/provider";
 
 const chapterUrl = new URL("https://www.wattpad.com/123456789-example-chapter");
 
@@ -36,6 +39,7 @@ test("mock translation toggles repeatedly without changing original content or u
   assert.deepEqual(view.status(chapterUrl), {
     supported: true,
     translated: true,
+    translating: false,
   });
   assert.equal(first.innerHTML, originalHtml);
   assert.equal(
@@ -57,6 +61,7 @@ test("mock translation toggles repeatedly without changing original content or u
   assert.deepEqual(view.status(chapterUrl), {
     supported: true,
     translated: false,
+    translating: false,
   });
   assert.equal(first.innerHTML, originalHtml);
   assert.equal(
@@ -81,10 +86,29 @@ test("invalid provider output leaves original paragraphs untouched", async () =>
   const view = new ChapterView(document, new WattpadAdapter(), invalidProvider);
 
   await assert.rejects(view.translate(chapterUrl), /did not match/);
+  assert.match(view.status(chapterUrl).error ?? "", /did not match/);
   assert.equal(
     document.querySelector(".part-content-new")!.innerHTML,
     originalHtml,
   );
+});
+
+test("reports in-progress translation and rejects a duplicate request", async () => {
+  const document = chapter();
+  let finish!: (result: TranslationResult) => void;
+  const provider: TranslationProvider = {
+    translate: () =>
+      new Promise<TranslationResult>((resolve) => (finish = resolve)),
+  };
+  const view = new ChapterView(document, new WattpadAdapter(), provider);
+  const pending = view.translate(chapterUrl);
+
+  assert.equal(view.status(chapterUrl).translating, true);
+  await assert.rejects(view.translate(chapterUrl), /already in progress/);
+  finish({ paragraphs: ["Hello", "Hello again"] });
+  await pending;
+  assert.equal(view.status(chapterUrl).translating, false);
+  assert.equal(view.status(chapterUrl).translated, true);
 });
 
 test("keeps embedded photos and linked videos visible while translating prose", async () => {
