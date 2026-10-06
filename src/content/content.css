@@ -1,0 +1,7 @@
+p[data-lingualoom-original-hidden] {
+  display: none !important;
+}
+
+p[data-lingualoom-translation] {
+  white-space: pre-wrap;
+}

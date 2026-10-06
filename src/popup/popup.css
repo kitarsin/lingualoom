@@ -1,0 +1,44 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color-scheme: light dark;
+}
+
+body {
+  width: 270px;
+  margin: 0;
+}
+
+main {
+  padding: 16px;
+}
+
+h1 {
+  font-size: 1.25rem;
+  margin: 0 0 12px;
+}
+
+#status {
+  margin: 0 0 12px;
+}
+
+button {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  padding: 8px;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+#error {
+  color: #b00020;
+}
+
+small {
+  display: block;
+  margin-top: 12px;
+  line-height: 1.4;
+}

@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "LinguaLoom",
+  "version": "0.1.0",
+  "description": "A local mock of literary translation on Wattpad chapters.",
+  "action": {
+    "default_title": "LinguaLoom",
+    "default_popup": "popup.html"
+  },
+  "permissions": ["activeTab"],
+  "content_scripts": [
+    {
+      "matches": ["https://wattpad.com/*", "https://www.wattpad.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
