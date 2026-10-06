@@ -14,6 +14,8 @@ test("recognizes a chapter with visible story paragraphs only", () => {
         <p hidden>Hidden draft</p>
         <p style="display:none">Hidden text</p>
         <p>Second paragraph</p>
+        <p>Photo <img src="photo.jpg" alt="Chapter photo"></p>
+        <p>Clip <a href="https://www.youtube.com/watch?v=example">Watch video</a></p>
       </div>
       <p>Comments and controls</p>
     </main>`,

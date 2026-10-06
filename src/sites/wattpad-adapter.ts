@@ -9,6 +9,11 @@ const chapterContainers = [
   ".page .text",
 ];
 
+// A translated text-only <p> would hide media or links nested in the original.
+// Leave those paragraphs in Wattpad's DOM until the renderer can preserve them.
+const embeddedContent =
+  "a[href], img, picture, video, audio, iframe, embed, object, canvas, svg, figure";
+
 function isVisible(element: HTMLElement): boolean {
   for (
     let current: HTMLElement | null = element;
@@ -47,6 +52,7 @@ export class WattpadAdapter implements SiteAdapter {
             !paragraph.closest(
               'button, [role="button"], [contenteditable="true"]',
             ) &&
+            !paragraph.querySelector(embeddedContent) &&
             paragraph.textContent?.trim() &&
             isVisible(paragraph),
         ),

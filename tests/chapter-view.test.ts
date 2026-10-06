@@ -86,3 +86,43 @@ test("invalid provider output leaves original paragraphs untouched", async () =>
     originalHtml,
   );
 });
+
+test("keeps embedded photos and linked videos visible while translating prose", async () => {
+  const document = new JSDOM(
+    `<div class="part-content-new">
+       <p id="prose">No quería volver a casa.</p>
+       <p id="photo">A memory <img src="memory.jpg" alt="A family photo"></p>
+       <p id="video">Watch the scene: <a href="https://www.youtube.com/watch?v=example">video</a></p>
+       <p id="embed">Listen <iframe src="https://www.youtube.com/embed/example"></iframe></p>
+       <p id="ending">Luego se fue.</p>
+     </div>`,
+    { url: chapterUrl.href },
+  ).window.document;
+  const view = new ChapterView(
+    document,
+    new WattpadAdapter(),
+    new MockTranslationProvider(),
+  );
+  const media = ["#photo", "#video", "#embed"].map((selector) =>
+    document.querySelector<HTMLElement>(selector)!,
+  );
+  const originalMarkup = media.map((paragraph) => paragraph.innerHTML);
+
+  await view.translate(chapterUrl);
+  assert.equal(
+    document.querySelectorAll("[data-lingualoom-translation]").length,
+    2,
+  );
+  for (const [index, paragraph] of media.entries()) {
+    assert.equal(
+      paragraph.hasAttribute("data-lingualoom-original-hidden"),
+      false,
+    );
+    assert.equal(paragraph.innerHTML, originalMarkup[index]);
+  }
+
+  view.showOriginal();
+  for (const [index, paragraph] of media.entries()) {
+    assert.equal(paragraph.innerHTML, originalMarkup[index]);
+  }
+});

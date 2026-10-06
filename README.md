@@ -41,7 +41,7 @@ After rebuilding, click **Reload** on the extension card and reload the Wattpad 
 
 On a real Wattpad chapter page, the popup should say the page is supported when the chapter body is available. Click **Translate Chapter** and confirm each story paragraph starts with `[TRANSLATED] `. Wattpad navigation, comments, and controls should remain unchanged. Click **Show Original** and confirm the exact original prose and inline formatting return. Repeat the toggle, reopen the popup, and try a story overview or unrelated site; those pages should be reported as unsupported.
 
-Wattpad can change its page structure. If a real chapter is reported as unsupported or non-story text is selected, capture the chapter URL and relevant DOM structure for an adapter update.
+Paragraphs containing images, embedded media, or links stay in their original form so media is not hidden by the text-only mock view. Wattpad can change its page structure. If a real chapter is reported as unsupported or non-story text is selected, capture the chapter URL and relevant DOM structure for an adapter update.
 
 ## Code layout
 
